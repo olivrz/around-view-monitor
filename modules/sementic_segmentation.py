@@ -1,6 +1,8 @@
 # loading packages
 # - public lib
-import os, imp, json, sys, time, cv2, scipy.misc
+import os, imp, json, sys, time, cv2
+
+import PIL
 import numpy as np
 import tensorflow as tf
 
@@ -9,7 +11,7 @@ class avm_ss: # semantic segmentation for avm image
         self.graph = self.load_pb(filepath)
         self.output = self.graph.get_tensor_by_name('decoder/Softmax:0')
         self.input = self.graph.get_tensor_by_name('Placeholder:0')    
-        self.sess = tf.Session(graph=self.graph)
+        self.sess = tf.compat.v1.Session(graph=self.graph)
 
         hypes_filepath = './models/hypes.json'
         with open(hypes_filepath, 'r') as f:
@@ -27,8 +29,8 @@ class avm_ss: # semantic segmentation for avm image
         print('[avm_ss] model graphs are built')
     
     def load_pb(self, pb):
-        with tf.gfile.GFile(pb, "rb") as f:
-            graph_def = tf.GraphDef()
+        with tf.io.gfile.GFile(pb, "rb") as f:
+            graph_def = tf.compat.v1.GraphDef()
             graph_def.ParseFromString(f.read())
         with tf.Graph().as_default() as graph:
             tf.import_graph_def(graph_def, name='')
@@ -76,7 +78,7 @@ class avm_ss: # semantic segmentation for avm image
 
 def overlay_segmentation(input_image, segmentation, color_dict):
     width, height = segmentation.shape
-    output = scipy.misc.toimage(segmentation)
+    output = PIL.Image.fromarray(segmentation)
     output = output.convert('RGBA')
     for x in range(0, width):
         for y in range(0, height):
@@ -85,7 +87,7 @@ def overlay_segmentation(input_image, segmentation, color_dict):
             elif 'default' in color_dict:
                 output.putpixel((y, x), color_dict['default'])
 
-    background = scipy.misc.toimage(input_image)
+    background = PIL.Image.fromarray(input_image)
     background.paste(output, box=None, mask=output)
 
     return np.array(background)
