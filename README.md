@@ -11,7 +11,7 @@ This is an implementation of the semantic segmentation algorithm for around view
 * opencv 3.3.1
 * numpy 1.15.2
 * matplotlib 2.2.3
-* tensorflow 1.5.0 (GPU is preferable)
+* tensorflow 2.x (GPU is preferable)
 
 
 
