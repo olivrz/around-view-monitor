@@ -41,7 +41,6 @@ class avm_ss: # semantic segmentation for avm image
 # Core() is called everytime you have a new input
     def run(self, img_src):
         if img_src is not None:
-
             ################################################
             # inference
             start_time = time.time()
